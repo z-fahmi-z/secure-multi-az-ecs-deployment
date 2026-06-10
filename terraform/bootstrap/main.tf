@@ -18,21 +18,6 @@ locals {
     "${aws_s3_bucket.cloudtrail.arn}/${var.cloudtrail_log_prefix}",
     "${aws_s3_bucket.cloudtrail.arn}/${var.cloudtrail_log_prefix}/*"
   ]
-
-  developer_team_principal_arns = [
-    for user in var.developer_team_usernames :
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"
-  ]
-
-  sre_team_principal_arns = [
-    for user in var.sre_team_usernames :
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"
-  ]
-
-  platform_team_principal_arns = [
-    for user in var.platform_team_usernames :
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"
-  ]
 }
 
 #
@@ -97,12 +82,56 @@ resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   restrict_public_buckets = local.secure_bucket_config.restrict_public_buckets
 }
 
+data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
+  statement {
+    sid = "AWSCloudTrailAclCheck"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions = ["s3:GetBucketAcl"]
+    resources = [aws_s3_bucket.cloudtrail.arn]
+  }
+
+  statement {
+    sid = "AWSCloudTrailWrite"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.cloudtrail.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values = ["bucket-owner-full-control"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "cloudtrail_logs_policy" {
+  bucket = aws_s3_bucket.cloudtrail.id
+  policy = data.aws_iam_policy_document.cloudtrail_bucket_policy.json
+}
+
+
 #
-# CloudTrail log bucket
+# CloudTrail to log all management events to the CloudTrail S3 bucket
 # 
+
 resource "aws_cloudtrail" "this" {
   name           = "${var.name_prefix}-trail"
   s3_bucket_name = aws_s3_bucket.cloudtrail.bucket
+  enable_log_file_validation = true
+  is_multi_region_trail      = true
+  include_global_service_events = true
+  enable_logging = true
+  depends_on = [aws_s3_bucket_policy.cloudtrail_logs_policy]
 }
 
 #
@@ -146,52 +175,27 @@ resource "aws_ecr_lifecycle_policy" "app" {
 }
 
 #
-# Trust policies for dev and platform teams
+# Group definitions for dev and platform teams (long-term access)
 #
 
-data "aws_iam_policy_document" "developer_assume_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = local.developer_team_principal_arns
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
+resource "aws_iam_group" "developers" {
+  name = "${var.name_prefix}-developers"
 }
 
-data "aws_iam_policy_document" "ops_assume_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type = "AWS"
-      identifiers = concat(
-        local.sre_team_principal_arns,
-        local.platform_team_principal_arns
-      )
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
+resource "aws_iam_group" "ops_debug" {
+  name = "${var.name_prefix}-ops-debug"
 }
 
-
-# Developer role 
+#
+# Developer Group Permissions
 # - can configure app secrets in Secrets Manager
 # - can read CloudTrail logs for debugging
-
-resource "aws_iam_role" "developer" {
-  name               = "${var.name_prefix}-developer-secrets-access"
-  assume_role_policy = data.aws_iam_policy_document.developer_assume_role.json
-}
+#
 
 data "aws_iam_policy_document" "developer_policy" {
-
   statement {
     sid = "SecretsManagerAccess"
+    effect = "Allow"
 
     actions = [
       "secretsmanager:GetSecretValue",
@@ -204,6 +208,7 @@ data "aws_iam_policy_document" "developer_policy" {
 
   statement {
     sid = "CloudTrailRead"
+    effect = "Allow"
 
     actions = [
       "cloudtrail:GetTrail",
@@ -220,24 +225,27 @@ data "aws_iam_policy_document" "developer_policy" {
   }
 }
 
-resource "aws_iam_role_policy" "developer_inline_policy" {
-  role   = aws_iam_role.developer.id
-  policy = data.aws_iam_policy_document.developer_policy.json
+resource "aws_iam_policy" "developer_policy" {
+  name        = "${var.name_prefix}-developer-policy"
+  policy      = data.aws_iam_policy_document.developer_policy.json
 }
 
-# Ops debug role (mainly for SREs and Platform team)
+resource "aws_iam_group_policy_attachment" "developers" {
+  group      = aws_iam_group.developers.name
+  policy_arn = aws_iam_policy.developer_policy.arn
+}
+
+
+#
+# Ops Debug Group Permissions (for SREs and Platform team)
 # - can access SSM Session Manager for debugging running tasks
 # - can read CloudTrail logs for debugging
-
-resource "aws_iam_role" "ops_debug" {
-  name               = "${var.name_prefix}-ops-ssm-debug"
-  assume_role_policy = data.aws_iam_policy_document.ops_assume_role.json
-}
+#
 
 data "aws_iam_policy_document" "ops_policy" {
-
   statement {
     sid = "SSMDebug"
+    effect = "Allow"
 
     actions = [
       "ssm:GetParameter",
@@ -259,6 +267,7 @@ data "aws_iam_policy_document" "ops_policy" {
 
   statement {
     sid = "CloudTrailRead"
+    effect = "Allow"
 
     actions = [
       "cloudtrail:GetTrail",
@@ -275,7 +284,12 @@ data "aws_iam_policy_document" "ops_policy" {
   }
 }
 
-resource "aws_iam_role_policy" "ops_inline_policy" {
-  role   = aws_iam_role.ops_debug.id
-  policy = data.aws_iam_policy_document.ops_policy.json
+resource "aws_iam_policy" "ops_policy" {
+  name        = "${var.name_prefix}-ops-debug-policy"
+  policy      = data.aws_iam_policy_document.ops_policy.json
+}
+
+resource "aws_iam_group_policy_attachment" "ops_debug" {
+  group      = aws_iam_group.ops_debug.name
+  policy_arn = aws_iam_policy.ops_policy.arn
 }
