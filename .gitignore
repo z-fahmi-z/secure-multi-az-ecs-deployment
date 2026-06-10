@@ -1,0 +1,63 @@
+# Terraform working directory
+**/.terraform
+*.terraform.lock.hcl
+
+# Terraform state files (may contain sensitive data)
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Exclude variable definitions that may contain secrets
+*.tfvars
+*.tfvars.json
+
+# Keep example variable files
+!*.example.tfvars
+!terraform.tfvars.example
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform plan output
+*.tfplan
+plan.out
+
+# Local Terraform CLI config
+.terraformrc
+terraform.rc
+
+# Lock file
+# Keep this committed for reproducible provider versions
+# Uncomment only if you intentionally do not track it
+# .terraform.lock.hcl
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Secrets
+secrets.*
+*.pem
+*.key
+*.p12
+*.cer
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
