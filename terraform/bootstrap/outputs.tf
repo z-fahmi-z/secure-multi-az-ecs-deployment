@@ -38,10 +38,12 @@ output "ecr_repository_arn" {
   value = aws_ecr_repository.app.arn
 }
 
-output "developer_role_arn" {
-  value = aws_iam_role.developer.arn
+output "developers_group_arn" {
+  description = "ARN of the developers group for IAM policies and references"
+  value       = aws_iam_group.developers.arn
 }
 
-output "ops_role_arn" {
-  value = aws_iam_role.ops_debug.arn
+output "ops_debug_group_arn" {
+  description = "ARN of the operations debug group"
+  value       = aws_iam_group.ops_debug.arn
 }
