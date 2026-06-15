@@ -3,14 +3,19 @@ output "vpc_id" {
   description = "The ID of the VPC"
 }
 
-output "public_subnet_ids" {
-  value       = [for s in aws_subnet.public : s.id]
-  description = "The IDs of the public subnets"
+output "vpc_cidr" {
+  value       = aws_vpc.this.cidr_block
+  description = "The CIDR block of the VPC"
 }
 
 output "private_subnet_ids" {
   value       = [for s in aws_subnet.private : s.id]
   description = "The IDs of the private subnets"
+}
+
+output "private_route_table_ids" {
+  value       = [for rt in aws_route_table.private_rt : rt.id]
+  description = "The IDs of the private route tables"
 }
 
 output "database_subnet_ids" {
