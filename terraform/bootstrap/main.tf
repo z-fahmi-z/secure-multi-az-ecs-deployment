@@ -20,10 +20,7 @@ locals {
   ]
 }
 
-#
-# S3 bucket for tfstate with versioning and encryption enabled
-#
-
+# S3 bucket for tfstate 
 resource "aws_s3_bucket" "terraform_state" {
   bucket        = local.state_bucket_name
   force_destroy = local.force_destroy
@@ -55,10 +52,7 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
   restrict_public_buckets = local.secure_bucket_config.restrict_public_buckets
 }
 
-#
 # S3 bucket for CloudTrail logs
-#
-
 resource "aws_s3_bucket" "cloudtrail" {
   bucket        = local.cloudtrail_bucket_name
   force_destroy = local.force_destroy
@@ -91,7 +85,7 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
       identifiers = ["cloudtrail.amazonaws.com"]
     }
 
-    actions = ["s3:GetBucketAcl"]
+    actions   = ["s3:GetBucketAcl"]
     resources = [aws_s3_bucket.cloudtrail.arn]
   }
 
@@ -103,13 +97,13 @@ data "aws_iam_policy_document" "cloudtrail_bucket_policy" {
       identifiers = ["cloudtrail.amazonaws.com"]
     }
 
-    actions = ["s3:PutObject"]
+    actions   = ["s3:PutObject"]
     resources = ["${aws_s3_bucket.cloudtrail.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"]
 
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-acl"
-      values = ["bucket-owner-full-control"]
+      values   = ["bucket-owner-full-control"]
     }
   }
 }
@@ -120,24 +114,19 @@ resource "aws_s3_bucket_policy" "cloudtrail_logs_policy" {
 }
 
 
-#
-# CloudTrail to log all management events to the CloudTrail S3 bucket
-# 
-
+# CloudTrail 
 resource "aws_cloudtrail" "this" {
-  name           = "${var.name_prefix}-trail"
-  s3_bucket_name = aws_s3_bucket.cloudtrail.bucket
-  enable_log_file_validation = true
-  is_multi_region_trail      = true
+  name                          = "${var.name_prefix}-trail"
+  s3_bucket_name                = aws_s3_bucket.cloudtrail.bucket
+  enable_log_file_validation    = true
+  is_multi_region_trail         = true
   include_global_service_events = true
-  enable_logging = true
-  depends_on = [aws_s3_bucket_policy.cloudtrail_logs_policy]
+  enable_logging                = true
+  depends_on                    = [aws_s3_bucket_policy.cloudtrail_logs_policy]
 }
 
-#
-# ECR repository for application images
-#
 
+# ECR repository 
 resource "aws_ecr_repository" "app" {
   name                 = var.ecr_repository_name
   image_tag_mutability = "IMMUTABLE"
@@ -174,10 +163,7 @@ resource "aws_ecr_lifecycle_policy" "app" {
   })
 }
 
-#
-# Group definitions for dev and platform teams (long-term access)
-#
-
+# Group definitions for dev and platform teams
 resource "aws_iam_group" "developers" {
   name = "${var.name_prefix}-developers"
 }
@@ -194,7 +180,7 @@ resource "aws_iam_group" "ops_debug" {
 
 data "aws_iam_policy_document" "developer_policy" {
   statement {
-    sid = "SecretsManagerAccess"
+    sid    = "SecretsManagerAccess"
     effect = "Allow"
 
     actions = [
@@ -207,7 +193,7 @@ data "aws_iam_policy_document" "developer_policy" {
   }
 
   statement {
-    sid = "CloudTrailRead"
+    sid    = "CloudTrailRead"
     effect = "Allow"
 
     actions = [
@@ -226,15 +212,14 @@ data "aws_iam_policy_document" "developer_policy" {
 }
 
 resource "aws_iam_policy" "developer_policy" {
-  name        = "${var.name_prefix}-developer-policy"
-  policy      = data.aws_iam_policy_document.developer_policy.json
+  name   = "${var.name_prefix}-developer-policy"
+  policy = data.aws_iam_policy_document.developer_policy.json
 }
 
 resource "aws_iam_group_policy_attachment" "developers" {
   group      = aws_iam_group.developers.name
   policy_arn = aws_iam_policy.developer_policy.arn
 }
-
 
 #
 # Ops Debug Group Permissions (for SREs and Platform team)
@@ -244,7 +229,7 @@ resource "aws_iam_group_policy_attachment" "developers" {
 
 data "aws_iam_policy_document" "ops_policy" {
   statement {
-    sid = "SSMDebug"
+    sid    = "SSMDebug"
     effect = "Allow"
 
     actions = [
@@ -266,7 +251,7 @@ data "aws_iam_policy_document" "ops_policy" {
   }
 
   statement {
-    sid = "CloudTrailRead"
+    sid    = "CloudTrailRead"
     effect = "Allow"
 
     actions = [
@@ -285,8 +270,8 @@ data "aws_iam_policy_document" "ops_policy" {
 }
 
 resource "aws_iam_policy" "ops_policy" {
-  name        = "${var.name_prefix}-ops-debug-policy"
-  policy      = data.aws_iam_policy_document.ops_policy.json
+  name   = "${var.name_prefix}-ops-debug-policy"
+  policy = data.aws_iam_policy_document.ops_policy.json
 }
 
 resource "aws_iam_group_policy_attachment" "ops_debug" {
