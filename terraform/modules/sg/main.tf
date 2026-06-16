@@ -72,6 +72,20 @@ resource "aws_vpc_security_group_egress_rule" "ecs_to_vpc_endpoints" {
   referenced_security_group_id = aws_security_group.vpc_endpoints.id
 }
 
+data "aws_ec2_managed_prefix_list" "s3" {
+  name = "com.amazonaws.${var.aws_region}.s3"
+}
+
+resource "aws_vpc_security_group_egress_rule" "ecs_to_s3" {
+  security_group_id = aws_security_group.ecs.id
+  description       = "ECS to S3 (ECR image layers via gateway endpoint)"
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  prefix_list_id    = data.aws_ec2_managed_prefix_list.s3.id
+}
+
+
 # RDS  
 resource "aws_security_group" "rds" {
   name   = "${var.name_prefix}-rds-sg"

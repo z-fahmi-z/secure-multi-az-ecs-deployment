@@ -26,6 +26,11 @@ variable "rds_port" {
   default     = 5432
 }
 
+variable "aws_region" {
+  description = "AWS region for the resources"
+  type        = string
+}
+
 variable "default_tags" {
   description = "Default tags to apply to all resources"
   type        = map(string)
