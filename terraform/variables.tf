@@ -57,3 +57,27 @@ variable "db_user" {
   type        = string
   default     = "postgres"
 }
+
+variable "bedrock_model_id" {
+  description = "Bedrock foundation model ID"
+  type        = string
+  default     = "deepseek.v3-v1:0"
+}
+
+variable "container_port" {
+  description = "Port on which the application container listens"
+  type        = number
+  default     = 8080
+}
+
+variable "container_name" {
+  description = "Name of the application container"
+  type        = string
+  default     = "journal-app"
+}
+
+variable "ecr_repository_name" {
+  description = "Name of the ECR repository for application images"
+  type        = string
+  default     = "journal-repository"
+}
