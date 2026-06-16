@@ -22,6 +22,7 @@ module "sg" {
   source   = "./modules/sg"
   vpc_id   = module.vpc.vpc_id
   vpc_cidr = module.vpc.vpc_cidr
+  aws_region = var.aws_region
 
   name_prefix  = local.name_prefix
   default_tags = local.default_tags
@@ -65,6 +66,72 @@ module "rds" {
   multi_az                = true
   apply_immediately       = true
   backup_retention_period = 7
+
+  name_prefix  = local.name_prefix
+  default_tags = local.default_tags
+}
+
+data "aws_ecr_repository" "journal_api" {
+  name = var.ecr_repository_name
+}
+
+module "ecs" {
+  source             = "./modules/ecs"
+  cluster_name       = "${local.name_prefix}-cluster"
+  container_name     = var.container_name
+  container_image    = "${data.aws_ecr_repository.journal_api.repository_url}:latest"
+  container_user     = "1000"
+  container_cpu      = 512
+  container_memory   = 1024
+  container_port     = var.container_port
+  desired_count      = 2
+  private_subnet_ids = module.vpc.private_subnet_ids
+  ecs_sg_id          = module.sg.ecs_sg_id
+  bedrock_model_id   = var.bedrock_model_id
+  aws_region         = var.aws_region
+
+  # Envionment and secrets
+  environments = [
+    {
+      name  = "POSTGRES_USER",
+      value = var.db_user
+    },
+    {
+      name  = "POSTGRES_DB",
+      value = var.db_name
+    },
+    {
+      name  = "POSTGRES_HOST",
+      value = module.rds.db_main_address
+    },
+    {
+      name  = "POSTGRES_PORT"
+      value = module.rds.db_main_port
+    },
+    {
+      name  = "CLOUD_NATIVE",
+      value = true
+    },
+    {
+      name  = "AWS_REGION",
+      value = var.aws_region
+    },
+    {
+      name  = "BEDROCK_MODEL_ID",
+      value = var.bedrock_model_id
+    }
+  ]
+
+  secrets = [
+    {
+      name      = "POSTGRES_PASSWORD"
+      valueFrom = module.rds.db_master_secret_arn
+    }
+  ]
+
+  secret_arns = [
+    module.rds.db_master_secret_arn
+  ]
 
   name_prefix  = local.name_prefix
   default_tags = local.default_tags
