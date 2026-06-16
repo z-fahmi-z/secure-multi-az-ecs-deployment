@@ -6,5 +6,6 @@ output "vpc_endpoint_ids" {
     ecr_api         = try(aws_vpc_endpoint.ecr_api.id, null)
     ecr_dkr         = try(aws_vpc_endpoint.ecr_dkr.id, null)
     s3              = try(aws_vpc_endpoint.s3.id, null)
+    cloudwatch_logs = try(aws_vpc_endpoint.cloudwatch_logs.id, null)
   }
 }

@@ -63,3 +63,57 @@ resource "aws_vpc_endpoint" "s3" {
     Name = "${var.name_prefix}-ecr-private-s3-endpoint"
   })
 }
+
+# CloudWatch Logs
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  vpc_id              = var.vpc_id
+  service_name        = "com.amazonaws.${var.aws_region}.logs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = var.private_subnet_ids
+  security_group_ids  = var.vpc_endpoint_sg_ids
+  private_dns_enabled = true
+
+  tags = merge(var.default_tags, {
+    Name = "${var.name_prefix}-cloudwatch-logs-endpoint"
+  })
+}
+
+# SSM 
+resource "aws_vpc_endpoint" "ssm" {
+  vpc_id              = var.vpc_id
+  service_name        = "com.amazonaws.${var.aws_region}.ssm"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = var.private_subnet_ids
+  security_group_ids  = var.vpc_endpoint_sg_ids
+  private_dns_enabled = true
+
+  tags = merge(var.default_tags, {
+    Name = "${var.name_prefix}-ssm-endpoint"
+  })
+}
+
+resource "aws_vpc_endpoint" "ssm_messages" {
+  vpc_id              = var.vpc_id
+  service_name        = "com.amazonaws.${var.aws_region}.ssmmessages"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = var.private_subnet_ids
+  security_group_ids  = var.vpc_endpoint_sg_ids
+  private_dns_enabled = true
+
+  tags = merge(var.default_tags, {
+    Name = "${var.name_prefix}-ssm-messages-endpoint"
+  })
+}
+
+resource "aws_vpc_endpoint" "ec2_messages" {
+  vpc_id              = var.vpc_id
+  service_name        = "com.amazonaws.${var.aws_region}.ec2messages"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = var.private_subnet_ids
+  security_group_ids  = var.vpc_endpoint_sg_ids
+  private_dns_enabled = true
+
+  tags = merge(var.default_tags, {
+    Name = "${var.name_prefix}-ec2-messages-endpoint"
+  })
+}
