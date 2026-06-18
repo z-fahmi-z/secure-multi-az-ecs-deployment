@@ -28,16 +28,22 @@ variable "availability_zones" {
   default     = ["us-east-1a", "us-east-1b"]
 }
 
+variable "public_subnet_cidrs" {
+  description = "Public subnet CIDR blocks"
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.4.0/24"]
+}
+
 variable "private_subnet_cidrs" {
   description = "private subnet CIDR blocks"
   type        = list(string)
-  default     = ["10.0.2.0/24", "10.0.4.0/24"]
+  default     = ["10.0.2.0/24", "10.0.5.0/24"]
 }
 
 variable "database_subnet_cidrs" {
   description = "database subnet CIDR blocks"
   type        = list(string)
-  default     = ["10.0.3.0/24", "10.0.5.0/24"]
+  default     = ["10.0.3.0/24", "10.0.6.0/24"]
 }
 
 variable "aws_region" {
@@ -61,7 +67,7 @@ variable "db_user" {
 variable "bedrock_model_id" {
   description = "Bedrock foundation model ID"
   type        = string
-  default     = "deepseek.v3-v1:0"
+  default     = "deepseek.v3.2"
 }
 
 variable "container_port" {
