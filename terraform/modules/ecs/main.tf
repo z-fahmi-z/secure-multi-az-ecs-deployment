@@ -24,7 +24,7 @@ locals {
       }
     }
   ])
-}
+} 
 
 resource "aws_ecs_cluster" "this" {
   name = "${var.name_prefix}-cluster"
@@ -112,7 +112,7 @@ data "aws_iam_policy_document" "task_role_bedrock" {
       "bedrock:InvokeModelWithResponseStream",
     ]
     resources = [
-      "arn:aws:bedrock:${var.aws_region}::foundation-model/${var.bedrock_model_id}",
+      "arn:aws:bedrock:*::foundation-model/${var.bedrock_model_id}"
     ]
   }
 }
@@ -162,17 +162,23 @@ resource "aws_ecs_task_definition" "this" {
 
 # ECS Service
 resource "aws_ecs_service" "this" {
-  name            = "${var.name_prefix}-service"
-  cluster         = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
+  name                   = "${var.name_prefix}-service"
+  cluster                = aws_ecs_cluster.this.id
+  task_definition        = aws_ecs_task_definition.this.arn
   enable_execute_command = true
-  desired_count   = var.desired_count
-  launch_type     = "FARGATE"
+  desired_count          = var.desired_count
+  launch_type            = "FARGATE"
 
   network_configuration {
     subnets          = var.private_subnet_ids
     security_groups  = [var.ecs_sg_id]
     assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = var.target_group_arn
+    container_name   = var.container_name
+    container_port   = var.container_port
   }
 
   tags = merge(var.default_tags, {

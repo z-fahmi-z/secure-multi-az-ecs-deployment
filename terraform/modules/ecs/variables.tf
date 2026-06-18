@@ -66,6 +66,11 @@ variable "bedrock_model_id" {
   type        = string
 }
 
+variable "bedrock_inference_profile_id" {
+  description = "Bedrock inference profile ID (usually 'us.' + model ID)"
+  type        = string
+}
+
 variable "environments" {
   description = "Static environment variables for the container"
   type = list(object({
@@ -88,6 +93,11 @@ variable "secret_arns" {
   description = "List of Secrets Manager ARNs the task execution role can access"
   type        = list(string)
   default     = []
+}
+
+variable "target_group_arn" {
+  description = "ARN of the load balancer target group to attach the service to"
+  type        = string
 }
 
 variable "name_prefix" {
