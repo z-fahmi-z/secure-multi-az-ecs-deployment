@@ -101,29 +101,6 @@ variable "backup_retention_period" {
   default     = 7
 }
 
-variable "lambda_runtime" {
-  description = "Runtime for the Lambda function"
-  type        = string
-  default     = "python3.13"
-}
-
-variable "lambda_timeout" {
-  description = "Timeout for the Lambda function"
-  type        = number
-  default     = 300
-}
-
-variable "lambda_memory_size" {
-  description = "Memory size for the Lambda function"
-  type        = number
-  default     = 256
-}
-
-variable "lambda_sg_id" {
-  description = "Security group ID for the Lambda function"
-  type        = string
-}
-
 variable "default_tags" {
   description = "Default tags to apply to all resources"
   type        = map(string)
