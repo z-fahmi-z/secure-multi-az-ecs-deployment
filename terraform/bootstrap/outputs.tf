@@ -47,3 +47,7 @@ output "ops_debug_group_arn" {
   description = "ARN of the operations debug group"
   value       = aws_iam_group.ops_debug.arn
 }
+
+output "ecr_push_role_arn" {
+  value = module.ecr_push_role.role_arn
+}

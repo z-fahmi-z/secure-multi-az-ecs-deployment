@@ -164,6 +164,48 @@ resource "aws_ecr_lifecycle_policy" "app" {
   })
 }
 
+# ECR GitHub OIDC setup
+
+module "ecr_push_role" {
+  source    = "../global/iam"
+  role_name = "github-ci-ecr-push"
+
+  tags = {
+    Purpose = "github-actions-ecr-push"
+  }
+}
+
+data "aws_iam_policy_document" "ecr_push" {
+  statement {
+    sid       = "AllowEcrAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowPushToSingleRepository"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:PutImage",
+    ]
+    resources = [
+      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.ecr_repository_name}"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "ecr_push" {
+  name   = "github-ci-ecr-push-policy"
+  role   = module.ecr_push_role.role_id
+  policy = data.aws_iam_policy_document.ecr_push.json
+}
+
+
 # Group definitions for dev and platform teams
 resource "aws_iam_group" "developers" {
   name = "${var.name_prefix}-developers"
