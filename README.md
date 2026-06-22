@@ -76,7 +76,7 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 | **Python** | 3.13 | [Install Python](https://www.python.org/downloads/) | [Python](https://docs.python.org/3/) |
 
 ### Local Setup
-> [!NOTE]
+> [!CAUTION]
 > After cloning, change and setup your local terraform vars where needed.
 
 1. Navigate to the bootstrap directory and initialize Terraform:
