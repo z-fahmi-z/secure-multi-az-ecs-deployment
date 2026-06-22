@@ -1,7 +1,7 @@
-# Secured Multi-AZ ECS Fargate Deployment on AWS
+![Architecture Overview](assets/ecs-project-banner.png)
 
 <details>
-  <summary>📑 Table of Contents</summary>
+  <summary>Table of Contents</summary>
   <br>
 
   <ul>
@@ -20,12 +20,12 @@
 
 </details>
 
+> [!IMPORTANT]
+> This repository contains only the IaC layer for hosting the forked [`journal-starter`](https://github.com/z-fahmi-z/journal-starter) capstone. All application logic and service code reside in that separate repository for better SoC.
+
 ## About
 
 This project demonstrates a secure, highly available containerized application deployment on AWS using ECS Fargate across multiple Availability Zones. Built as a personal portfolio project showcasing industry best practices for cloud infrastructure including IaC with Terraform, centralized logging and monitoring, and a zero-trust security model. The architecture is optimized for personal cost management while maintaining production-grade security and reliability standards.
-
-> [!IMPORTANT]
-> This repository contains only the IaC layer for hosting the forked [`journal-starter`](https://github.com/z-fahmi-z/journal-starter) capstone. All application logic and service code reside in that separate repository for better SoC.
 
 ## Architecture Overview
 
@@ -37,7 +37,7 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 - **Serverless compute** using AWS Fargate for container orchestration.
 - **Centralized networking** through VPC Endpoints for private AWS service access.
 
-![Architecture Overview](assets/secured-multiaz-ecs-dev-deployment.png)
+![Architecture Diagram](assets/secured-multiaz-ecs-dev-deployment.png)
 
 ## Features
 
