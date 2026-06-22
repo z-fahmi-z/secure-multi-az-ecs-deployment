@@ -98,7 +98,7 @@ ecr_repository_url    = "123456789012.dkr.ecr.us-west-2.amazonaws.com/journal-st
 ```
 
 > [!TIP]
-> you should automate this process your own journal-starter capstone CI pipeline, since the corresponding GitHub IAM roles are also provisioned by this project. Refer this shared module`./terraform/global/iam` 
+> you should automate this process with your own CI pipeline for journal-starter capstone since the corresponding GitHub IAM roles are also provisioned by this project. Refer this shared module`./terraform/global/iam` 
 
 ```bash
 # From your completed journal-starter capstone root project directory
