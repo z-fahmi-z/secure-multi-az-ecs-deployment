@@ -3,7 +3,7 @@
 This project demonstrates a secure, highly available containerized application deployment on AWS using ECS Fargate across multiple Availability Zones. Built as a personal portfolio project showcasing industry best practices for cloud infrastructure including IaC with Terraform, centralized logging and monitoring, and a zero-trust security model. The architecture is optimized for personal cost management while maintaining production-grade security and reliability standards.
 
 > [!IMPORTANT]
-> This repository contains only the infrastructure layer for hosting the forked [journal-starter](https://github.com/z-fahmi-z/journal-starter) capstone project. All application logic and service code reside in this separate repository, ensuring a clean SoC between infrastructure and application development.
+> This repository contains only the infrastructure layer for hosting the forked [journal-starter](https://github.com/z-fahmi-z/journal-starter) capstone project. All application logic and service code reside in that separate repository for better SoC.
 
 ## Architecture Overview
 
