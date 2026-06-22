@@ -31,7 +31,9 @@ resource "aws_internet_gateway" "this" {
   })
 }
 
-# public subnets
+#
+# Public Subnets
+#
 resource "aws_subnet" "public" {
   for_each          = local.public_subnets
   vpc_id            = aws_vpc.this.id
@@ -62,7 +64,9 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-# private subnets
+#
+# Private Subnets
+#
 resource "aws_subnet" "private" {
   for_each          = local.private_subnets
   vpc_id            = aws_vpc.this.id
@@ -89,7 +93,9 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private_rt[each.key].id
 }
 
-# database subnets
+#
+# Database Subnets 
+#
 resource "aws_subnet" "database" {
   for_each          = local.database_subnets
   vpc_id            = aws_vpc.this.id

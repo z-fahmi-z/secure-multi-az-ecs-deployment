@@ -24,7 +24,7 @@ locals {
       }
     }
   ])
-} 
+}
 
 resource "aws_ecs_cluster" "this" {
   name = "${var.name_prefix}-cluster"
@@ -34,7 +34,9 @@ resource "aws_ecs_cluster" "this" {
   })
 }
 
-# IAM: Task Execution Role
+#
+# ECS IAM Task Execution Configs
+#
 
 ## Trust Policy
 data "aws_iam_policy_document" "task_execution_assume_role" {
@@ -80,7 +82,9 @@ resource "aws_iam_role_policy" "task_execution_secrets" {
   policy = data.aws_iam_policy_document.task_execution_secrets.json
 }
 
-# IAM: Task Role
+#
+# ECS IAM Task Role Configs
+#
 
 ## Trust Policy
 data "aws_iam_policy_document" "task_role_assume" {
@@ -124,7 +128,6 @@ resource "aws_iam_role_policy" "task_role_bedrock" {
 }
 
 ## SSM channel permissions
-
 data "aws_iam_policy_document" "task_role_ssm" {
   statement {
     effect = "Allow"
@@ -144,7 +147,9 @@ resource "aws_iam_role_policy" "task_role_ssm" {
   policy = data.aws_iam_policy_document.task_role_ssm.json
 }
 
+#
 # Task Definition
+# 
 resource "aws_ecs_task_definition" "this" {
   family                   = "${var.name_prefix}-task"
   cpu                      = var.container_cpu
@@ -160,7 +165,9 @@ resource "aws_ecs_task_definition" "this" {
   })
 }
 
+#
 # ECS Service
+#
 resource "aws_ecs_service" "this" {
   name                   = "${var.name_prefix}-service"
   cluster                = aws_ecs_cluster.this.id
@@ -190,7 +197,9 @@ resource "aws_ecs_service" "this" {
   }
 }
 
-# CloudWatch 
+#
+# CloudWatch Log Group for ECS
+#
 resource "aws_cloudwatch_log_group" "ecs" {
   name              = "/ecs/${var.name_prefix}"
   retention_in_days = 7

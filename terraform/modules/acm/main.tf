@@ -1,3 +1,8 @@
+#
+# Note:
+# - if you added more dvos, change this into "for" logic expression
+# - I had only one dvo at this time, so I just took the first element of the list
+#
 locals {
   dvo = tolist(aws_acm_certificate.this.domain_validation_options)[0]
 }

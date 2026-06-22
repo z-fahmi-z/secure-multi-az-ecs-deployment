@@ -48,7 +48,9 @@ resource "aws_iam_role_policy" "lambda_init_policy" {
   policy = data.aws_iam_policy_document.lambda_init_policy.json
 }
 
+#
 # Lambda Function 
+#
 resource "aws_lambda_function" "rds_initializer" {
   filename         = "${path.module}/src/lambda_pg_init_deploy.zip"
   source_code_hash = filebase64sha256("${path.module}/src/lambda_pg_init_deploy.zip")

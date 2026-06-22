@@ -1,4 +1,6 @@
+#
 # ALB
+#
 resource "aws_security_group" "alb" {
   name   = "${var.name_prefix}-alb-sg"
   vpc_id = var.vpc_id
@@ -35,7 +37,9 @@ resource "aws_vpc_security_group_egress_rule" "alb_to_ecs" {
   referenced_security_group_id = aws_security_group.ecs.id
 }
 
+#
 # ECS 
+#
 resource "aws_security_group" "ecs" {
   name   = "${var.name_prefix}-ecs-sg"
   vpc_id = var.vpc_id
@@ -85,8 +89,9 @@ resource "aws_vpc_security_group_egress_rule" "ecs_to_s3" {
   prefix_list_id    = data.aws_ec2_managed_prefix_list.s3.id
 }
 
-
-# RDS  
+#
+# RDS
+#  
 resource "aws_security_group" "rds" {
   name   = "${var.name_prefix}-rds-sg"
   vpc_id = var.vpc_id
@@ -114,7 +119,9 @@ resource "aws_vpc_security_group_ingress_rule" "rds_from_lambda" {
   referenced_security_group_id = aws_security_group.lambda_init.id
 }
 
-# Lambda 
+#
+# Lambda
+# 
 resource "aws_security_group" "lambda_init" {
   name   = "${var.name_prefix}-lambda-sg"
   vpc_id = var.vpc_id
@@ -147,7 +154,9 @@ resource "aws_vpc_security_group_egress_rule" "lambda_to_secrets_manager" {
   referenced_security_group_id = aws_security_group.vpc_endpoints.id
 }
 
-# VPC endpoints  
+#
+# VPC endpoints
+#  
 resource "aws_security_group" "vpc_endpoints" {
   name   = "${var.name_prefix}-vpc-endpoints-sg"
   vpc_id = var.vpc_id

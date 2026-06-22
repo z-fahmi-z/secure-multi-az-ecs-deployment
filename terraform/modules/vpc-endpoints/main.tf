@@ -1,4 +1,10 @@
-# Bedrock
+#
+# Bedrock Endpoints
+# 
+# Note:
+# - I only need to expose the runtime endpoint for my use-case
+# - There's actually more that bedrock can do, refer: https://docs.aws.amazon.com/bedrock/latest/userguide/endpoints.html
+#
 resource "aws_vpc_endpoint" "bedrock_runtime" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${var.aws_region}.bedrock-runtime"
@@ -12,7 +18,9 @@ resource "aws_vpc_endpoint" "bedrock_runtime" {
   })
 }
 
-# ASM
+#
+# ASM Endpoints
+#
 resource "aws_vpc_endpoint" "secrets_manager" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${var.aws_region}.secretsmanager"
@@ -26,7 +34,9 @@ resource "aws_vpc_endpoint" "secrets_manager" {
   })
 }
 
-# ECR 
+#
+# ECR Endpoints
+#
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
@@ -64,7 +74,9 @@ resource "aws_vpc_endpoint" "s3" {
   })
 }
 
-# CloudWatch Logs
+#
+# CloudWatch Endpoints
+#
 resource "aws_vpc_endpoint" "cloudwatch_logs" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${var.aws_region}.logs"
@@ -78,7 +90,9 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
   })
 }
 
-# SSM 
+#
+# SSM Endpoints
+#
 resource "aws_vpc_endpoint" "ssm" {
   vpc_id              = var.vpc_id
   service_name        = "com.amazonaws.${var.aws_region}.ssm"

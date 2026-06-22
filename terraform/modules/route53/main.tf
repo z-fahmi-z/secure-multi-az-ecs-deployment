@@ -4,6 +4,8 @@ data "aws_route53_zone" "this" {
 }
 
 resource "aws_route53_record" "alb_alias" {
+
+  # This builds the record into something like "record_name.yourhostedzone.org"
   zone_id = data.aws_route53_zone.this.zone_id
   name    = var.record_name
   type    = "A"

@@ -20,7 +20,9 @@ locals {
   ]
 }
 
-# S3 bucket for tfstate 
+#
+# S3 Bucket (tfstate)
+#
 resource "aws_s3_bucket" "terraform_state" {
   bucket        = local.state_bucket_name
   force_destroy = local.force_destroy
@@ -52,7 +54,9 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
   restrict_public_buckets = local.secure_bucket_config.restrict_public_buckets
 }
 
-# S3 bucket for CloudTrail logs
+# 
+# S3 Bucket (CloudTrail)
+#
 resource "aws_s3_bucket" "cloudtrail" {
   bucket        = local.cloudtrail_bucket_name
   force_destroy = local.force_destroy
@@ -114,7 +118,9 @@ resource "aws_s3_bucket_policy" "cloudtrail_logs_policy" {
 }
 
 
-# CloudTrail 
+# 
+# CloudTrail
+#
 resource "aws_cloudtrail" "this" {
   name                          = "${var.name_prefix}-trail"
   s3_bucket_name                = aws_s3_bucket.cloudtrail.bucket
@@ -126,7 +132,9 @@ resource "aws_cloudtrail" "this" {
 }
 
 
-# ECR repository 
+# 
+# ECR 
+#
 resource "aws_ecr_repository" "app" {
   name                 = var.ecr_repository_name
   image_tag_mutability = "MUTABLE"
@@ -164,8 +172,11 @@ resource "aws_ecr_lifecycle_policy" "app" {
   })
 }
 
-# ECR GitHub OIDC setup
-
+#
+# GitHub IAM Role 
+# - for ECR push permissions (CI)
+# - from global/iam module
+#
 module "ecr_push_role" {
   source    = "../global/iam"
   role_name = "github-ci-ecr-push"
@@ -206,7 +217,14 @@ resource "aws_iam_role_policy" "ecr_push" {
 }
 
 
-# Group definitions for dev and platform teams
+# 
+# General IAM Groups 
+# - for developers 
+# - for platform/ops teams
+# 
+# Note:
+# - tbh, I did this for a better reflection of real life SoCs based on my own intuition xD
+#
 resource "aws_iam_group" "developers" {
   name = "${var.name_prefix}-developers"
 }
@@ -268,6 +286,9 @@ resource "aws_iam_group_policy_attachment" "developers" {
 # Ops Debug Group Permissions (for SREs and Platform team)
 # - can access SSM Session Manager for debugging running tasks
 # - can read CloudTrail logs for debugging
+# 
+# Note:
+# - might add more permissions over time based on actual responsibilities
 #
 
 data "aws_iam_policy_document" "ops_policy" {

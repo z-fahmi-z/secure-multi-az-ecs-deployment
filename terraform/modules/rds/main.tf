@@ -20,7 +20,7 @@ resource "aws_db_instance" "main" {
   publicly_accessible         = var.publicly_accessible
   skip_final_snapshot         = true
 
-  # Network config
+  # Network configurations
   multi_az                = var.multi_az
   apply_immediately       = var.apply_immediately
   backup_retention_period = var.backup_retention_period
