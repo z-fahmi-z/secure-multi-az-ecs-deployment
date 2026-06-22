@@ -35,8 +35,8 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 
 ## Trade-Offs (Optimized for Personal Cost)
 
-- **VPC Endpoints instead of NAT Gateways**: Reduces cost significantly (NAT Gateway at ~$32/month vs VPC Endpoints at ~$7/month).
-- **AWS Systems Manager Session Manager instead of EC2 Bastion**: Eliminates EC2 compute costs (~$15-30/month) and public exposure.
+- **VPC Endpoints vs NAT Gateways**: Reduces cost significantly (NAT Gateway at ~$32/month vs VPC Endpoints at ~$7/month).
+- **SSM vs EC2 Bastion**: Eliminates EC2 compute costs (~$15-30/month) and public exposure.
 
 ## ToDos: Setup & Dashboards (WIP)
 
