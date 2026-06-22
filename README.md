@@ -19,24 +19,24 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 
 ## Infrastructure Features
 
-- **S3 State Locking**: Terraform state management with DynamoDB-backed state locking for concurrent operations safety.
-- **Multi-AZ Deployment**: High availability through distribution across two Availability Zones for both compute and database layers.
+- **S3 State Locking**: Terraform state management for concurrent operations safety.
+- **Multi-AZ Deployment**: High compute and database availability through distribution across two Availability Zones.
 - **AWS Bedrock Integration**: AI/ML capabilities integrated into the application stack.
-- **CloudWatch & CloudTrail**: Comprehensive logging, monitoring, and audit trail for all infrastructure and application activities.
-- **RDS + Lambda Initialization**: Automated database schema setup and seeding via Lambda functions on deployment.
+- **CloudWatch & CloudTrail**: Comprehensive logging, monitoring, and audit trail for all activities.
+- **RDS + Lambda Initialization**: Automated database schema setup via Lambda functions on deployment.
 
 ## Security Considerations
 
 - **AWS Certificate Manager (ACM)**: SSL/TLS certificate management for secure HTTPS communications.
-- **AWS Secrets Manager (ASM)**: Secure storage and rotation of sensitive credentials including database passwords and API keys.
-- **IAM Groups (Dev & Ops)**: Least-privilege access control with separate groups for development and operations teams.
+- **AWS Secrets Manager (ASM)**: Secure storage and rotation of sensitive credentials.
+- **IAM Groups (Dev & Ops)**: Least-privilege access control with separate groups for dev and ops teams.
 - **Task IAM Roles**: Fine-grained permissions for ECS tasks to access required AWS services.
-- **GitHub IAM Roles (OIDC)**: Secure GitHub Actions integration using OpenID Connect, eliminating the need for long-lived credentials.
+- **GitHub IAM Roles (OIDC)**: Secure GitHub Actions integration using OpenID Connect.
 
 ## Trade-Offs (Optimized for Personal Cost)
 
-- **VPC Endpoints instead of NAT Gateways**: Reduces cost significantly (NAT Gateway at ~$32/month vs VPC Endpoints at ~$7/month) while maintaining secure private subnet access to AWS services.
-- **AWS Systems Manager Session Manager instead of EC2 Bastion**: Eliminates EC2 compute costs (~$15-30/month) and public exposure while providing secure shell access to private resources through the AWS Console or CLI.
+- **VPC Endpoints instead of NAT Gateways**: Reduces cost significantly (NAT Gateway at ~$32/month vs VPC Endpoints at ~$7/month).
+- **AWS Systems Manager Session Manager instead of EC2 Bastion**: Eliminates EC2 compute costs (~$15-30/month) and public exposure.
 
 ## ToDos: Setup & Dashboards (WIP)
 
