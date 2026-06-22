@@ -137,8 +137,3 @@ cd bootstrap
 terraform plan -destroy
 terraform destroy --auto-approve
 ```
-
----
-
-> [!NOTE]
-> This project is actively maintained as a demonstration of modern AWS infrastructure patterns. Feel free to explore the code and adapt it for your own learning purposes.
