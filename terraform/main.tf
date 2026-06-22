@@ -135,7 +135,7 @@ resource "aws_lambda_invocation" "initialize_database" {
     create_before_destroy = true
   }
 
-  depends_on    = [module.lambda]
+  depends_on = [module.lambda]
 }
 
 data "aws_ecr_repository" "journal_api" {
@@ -143,21 +143,21 @@ data "aws_ecr_repository" "journal_api" {
 }
 
 module "ecs" {
-  source             = "./modules/ecs"
-  cluster_name       = "${local.name_prefix}-cluster"
-  container_name     = var.container_name
-  container_image    = "${data.aws_ecr_repository.journal_api.repository_url}:latest"
-  container_user     = "1000"
-  container_cpu      = 512
-  container_memory   = 1024
-  container_port     = var.container_port
-  target_group_arn   = module.alb.target_group_arn
-  desired_count      = 2
-  private_subnet_ids = module.vpc.private_subnet_ids
-  ecs_sg_id          = module.sg.ecs_sg_id
-  bedrock_model_id   = local.bedrock_model_id
+  source                       = "./modules/ecs"
+  cluster_name                 = "${local.name_prefix}-cluster"
+  container_name               = var.container_name
+  container_image              = "${data.aws_ecr_repository.journal_api.repository_url}:latest"
+  container_user               = "1000"
+  container_cpu                = 512
+  container_memory             = 1024
+  container_port               = var.container_port
+  target_group_arn             = module.alb.target_group_arn
+  desired_count                = 2
+  private_subnet_ids           = module.vpc.private_subnet_ids
+  ecs_sg_id                    = module.sg.ecs_sg_id
+  bedrock_model_id             = local.bedrock_model_id
   bedrock_inference_profile_id = local.bedrock_inference_profile_id
-  aws_region         = var.aws_region
+  aws_region                   = var.aws_region
 
   # Envionment and secrets
   environments = [
@@ -198,6 +198,7 @@ module "ecs" {
     }
   ]
 
+  # This one is for IAM resources
   secret_arns = [
     module.rds.db_master_secret_arn
   ]
@@ -208,4 +209,31 @@ module "ecs" {
   depends_on = [
     aws_lambda_invocation.initialize_database
   ]
+}
+
+#
+# Utilize the global/iam module for GitHub (CD)
+#
+module "ecs_deploy_role" {
+  source    = "./global/iam"
+  role_name = "github-cd-ecs-deploy"
+
+  tags = {
+    Purpose = "github-actions-ecs-force-deploy"
+  }
+}
+
+data "aws_iam_policy_document" "ecs_deploy" {
+  statement {
+    sid       = "AllowForceNewDeploymentOnSingleService"
+    effect    = "Allow"
+    actions   = ["ecs:UpdateService", "ecs:DescribeServices"]
+    resources = [module.ecs.service_id]
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_deploy" {
+  name   = "github-cd-ecs-deploy-policy"
+  role   = module.ecs_deploy_role.role_id
+  policy = data.aws_iam_policy_document.ecs_deploy.json
 }
