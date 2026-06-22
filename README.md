@@ -45,6 +45,7 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 
 - **S3 State Locking**: Terraform state management for concurrent operations safety.
 - **Multi-AZ Deployment**: High compute and database availability through distribution across two Availability Zones.
+- **Application Load Balancer (ALB)**: Distributes incoming traffic across ECS Fargate containers with SSL/TLS termination via ACM.
 - **AWS Bedrock Integration**: AI/ML capabilities integrated into the application stack.
 - **CloudWatch & CloudTrail**: Comprehensive logging, monitoring, and audit trail for all activities.
 - **RDS + Lambda Initialization**: Automated database schema setup via Lambda functions on deployment.
