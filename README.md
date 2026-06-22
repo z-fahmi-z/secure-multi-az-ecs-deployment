@@ -77,7 +77,7 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 
 ### Local Setup
 > [!CAUTION]
-> After cloning, change and setup your local terraform vars where needed.
+> After cloning, change the setup for your local terraform vars where needed.
 
 1. Navigate to the bootstrap directory and initialize Terraform:
 
