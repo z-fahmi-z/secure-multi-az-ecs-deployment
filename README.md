@@ -76,6 +76,8 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 | **Python** | 3.13 | [Install Python](https://www.python.org/downloads/) | [Python](https://docs.python.org/3/) |
 
 ### Local Setup
+> [!NOTE]
+> After cloning, change and setup your local terraform vars where needed.
 
 1. Navigate to the bootstrap directory and initialize Terraform:
 
@@ -88,8 +90,15 @@ terraform apply --auto-approve
 
 2. Note the ECR repository URI and IAM role outputs from the bootstrap apply. Use these to build and push your `journal-starter` container image:
 
+```bash
+ecr_push_role_arn     = "arn:aws:iam::123456789012:role/ecr-push-role"
+ecr_repository_arn    = "arn:aws:ecr:us-west-2:123456789012:repository/journal-starter"
+ecr_repository_name   = "journal-starter"
+ecr_repository_url    = "123456789012.dkr.ecr.us-west-2.amazonaws.com/journal-starter"
+```
+
 > [!TIP]
-> you should automate this in your own journal-starter capstone CI pipeline, since the arns are also provisioned by this project 
+> you should automate this process your own journal-starter capstone CI pipeline, since the corresponding GitHub IAM roles are also provisioned by this project. Refer this shared module`./terraform/global/iam` 
 
 ```bash
 # From your completed journal-starter capstone root project directory
