@@ -7,8 +7,13 @@
   <ul>
     <li><a href="#about">About</a></li>
     <li><a href="#architecture-overview">Architecture Overview</a></li>
-    <li><a href="#infrastructure-features">Infrastructure Features</a></li>
-    <li><a href="#security-considerations">Security Considerations</a></li>
+    <li>
+      <a href="#features">Features</a>
+      <ul>
+        <li><a href="#infrastructure">Infrastructure</a></li>
+        <li><a href="#security">Security</a></li>
+      </ul>
+    </li>
     <li><a href="#trade-offs-optimized-for-personal-cost">Trade-Offs (Optimized for Personal Cost)</a></li>
     <li><a href="#todos-setup--dashboards-wip">ToDos: Setup &amp; Dashboards (WIP)</a></li>
   </ul>
@@ -20,7 +25,7 @@
 This project demonstrates a secure, highly available containerized application deployment on AWS using ECS Fargate across multiple Availability Zones. Built as a personal portfolio project showcasing industry best practices for cloud infrastructure including IaC with Terraform, centralized logging and monitoring, and a zero-trust security model. The architecture is optimized for personal cost management while maintaining production-grade security and reliability standards.
 
 > [!IMPORTANT]
-> This repository contains only the IaC layer for hosting the forked [journal-starter](https://github.com/z-fahmi-z/journal-starter) capstone. All application logic and service code reside in that separate repository for better SoC.
+> This repository contains only the IaC layer for hosting the forked [`journal-starter`](https://github.com/z-fahmi-z/journal-starter) capstone. All application logic and service code reside in that separate repository for better SoC.
 
 ## Architecture Overview
 
@@ -34,7 +39,9 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 
 ![Architecture Overview](assets/secured-multiaz-ecs-dev-deployment.png)
 
-## Infrastructure Features
+## Features
+
+### Infrastructure
 
 - **S3 State Locking**: Terraform state management for concurrent operations safety.
 - **Multi-AZ Deployment**: High compute and database availability through distribution across two Availability Zones.
@@ -42,7 +49,7 @@ The infrastructure spans two Availability Zones (A and B) within a single AWS VP
 - **CloudWatch & CloudTrail**: Comprehensive logging, monitoring, and audit trail for all activities.
 - **RDS + Lambda Initialization**: Automated database schema setup via Lambda functions on deployment.
 
-## Security Considerations
+### Security
 
 - **AWS Certificate Manager (ACM)**: SSL/TLS certificate management for secure HTTPS communications.
 - **AWS Secrets Manager (ASM)**: Secure storage and rotation of sensitive credentials.
